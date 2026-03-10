@@ -6,11 +6,10 @@ def renderizar_mapa_total(df, zoom_level):
     """Muestra un mapa con todas las estaciones centrado en el centroide."""
     st.subheader("Mapa General de Estaciones")
     
-    # Calcular el centroide (promedio) de todas las estaciones
+    # Cálculo del centroide
     centro_lat = df['lat'].mean()
     centro_lon = df['lon'].mean()
     
-    # Crear los datos para el mapa
     view_state = pdk.ViewState(
         latitude=centro_lat,
         longitude=centro_lon,
@@ -40,16 +39,23 @@ def renderizar_detalle_estacion(df, zoom_level):
     lista_estaciones = sorted(df['name'].unique())
     estacion_seleccionada = st.selectbox("Selecciona una estación:", lista_estaciones)
     
+    # Filtrar datos de la estación elegida
     datos_estacion = df[df['name'] == estacion_seleccionada].iloc[0]
     
-    # Métricas (tu código actual)
+    # Métricas
     col1, col2, col3, col4 = st.columns(4)
-    with col1: st.metric("Bicis Disponibles", datos_estacion['num_bikes_available'])
-    with col2: st.metric("Bicis Dañadas", datos_estacion.get('num_bikes_disabled', 0))
-    with col3: st.metric("Puertos Libres", datos_estacion['num_docks_available'])
-    with col4: st.metric("Puertos Dañados", datos_estacion.get('num_docks_disabled', 0))
+    with col1:
+        st.metric("Bicis Disponibles", datos_estacion['num_bikes_available'])
+    with col2:
+        dañadas = datos_estacion.get('num_bikes_disabled', 0)
+        st.metric("Bicis Dañadas", dañadas)
+    with col3:
+        st.metric("Puertos Libres", datos_estacion['num_docks_available'])
+    with col4:
+        p_dañados = datos_estacion.get('num_docks_disabled', 0)
+        st.metric("Puertos Dañados", p_dañados)
 
-    # Mapa centrado en la estación seleccionada
+    # Configuración de la vista del mapa
     view_state = pdk.ViewState(
         latitude=datos_estacion['lat'],
         longitude=datos_estacion['lon'],
@@ -57,6 +63,7 @@ def renderizar_detalle_estacion(df, zoom_level):
         pitch=50
     )
     
+    # Capa para resaltar el punto de la estación
     layer = pdk.Layer(
         'ScatterplotLayer',
         df[df['name'] == estacion_seleccionada],
@@ -69,4 +76,4 @@ def renderizar_detalle_estacion(df, zoom_level):
         layers=[layer],
         initial_view_state=view_state,
         map_style=None
-    )))
+    ))
