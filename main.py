@@ -1,3 +1,4 @@
+import streamlit as st
 # Sección de importación de módulos
 from Modules.UI.header import show_header
 from Modules.Data.ecobici_service import cargar_estaciones_ecobici
