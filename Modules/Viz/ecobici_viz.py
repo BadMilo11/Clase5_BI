@@ -45,10 +45,11 @@ def create_deck_map(data):
     """Función auxiliar para un mapa más profesional con zoom cercano."""
     import pydeck as pdk
     return pdk.Deck(
-        map_style='mapbox://styles/mapbox/light-v9',
+        # CAMBIO AQUÍ: Usamos un estilo que no requiere Token de Mapbox obligatoriamente
+        map_style=None, 
         initial_view_state=pdk.ViewState(
-            latitude=data['lat'][0],
-            longitude=data['lon'][0],
+            latitude=data['lat'].iloc[0], # Usamos .iloc[0] por seguridad
+            longitude=data['lon'].iloc[0],
             zoom=15,
             pitch=50,
         ),
