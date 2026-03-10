@@ -5,8 +5,6 @@ from Modules.Data.ecobici_service import cargar_estaciones_ecobici
 # Sección para crear la GUI
 show_header("Mi primera GUI en Streamlit")
 
-st.title("Monitoreo Ecobici CDMX")
-
 st.write(cargar_estaciones_ecobici())
 
 df_estaciones = cargar_estaciones_ecobici()
