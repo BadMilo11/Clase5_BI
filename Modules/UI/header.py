@@ -8,6 +8,6 @@ def show_header(text):
         st.image("imagenes/UPlogo.jpg", width=200)
         
     with col2:
-        st.title(text_title)
+        st.title(text)
         st.caption("📘 Developed for: *Business Intelligence (Graduate Level)*")
-        st.caption("Instructor: Edgar Avalos-Gauna (2025), Universidad Panamericana")
+        st.caption("Instructor: Luis Emilio Heimpel Covarrubias (2026), Universidad Panamericana")
