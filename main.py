@@ -8,29 +8,27 @@ st.set_page_config(page_title="Ecobici Dashboard", layout="wide")
 
 show_header("Mi primera GUI en Streamlit")
 
-# 1. Cargar Datos una sola vez
 df_estaciones = cargar_estaciones_ecobici()
 
 if not df_estaciones.empty:
-    # 2. Configurar Sidebar primero
-    st.sidebar.title("Navegación")
+    # Sidebar para Navegación y Controles
+    st.sidebar.title("Configuración")
     opcion = st.sidebar.radio(
         "Selecciona una visualización:",
         ["Mapa General", "Detalle de Estación"]
     )
+    
+    # Slider de Zoom (valor min, valor max, valor default)
+    zoom_seleccionado = st.sidebar.slider("Nivel de Zoom", 10, 20, 13)
 
-    # 3. Lógica de despliegue según la opción
+    # Lógica de despliegue
     if opcion == "Mapa General":
         st.title("🚲 Red Completa Ecobici")
-        st.write(f"Mostrando {len(df_estaciones)} estaciones activas")
-        renderizar_mapa_total(df_estaciones)
-        
-        # Opcional: ver tabla solo en el mapa general
-        with st.expander("Ver tabla de datos"):
-            st.dataframe(df_estaciones)
+        renderizar_mapa_total(df_estaciones, zoom_seleccionado)
         
     elif opcion == "Detalle de Estación":
         st.title("🔍 Análisis de Disponibilidad")
-        renderizar_detalle_estacion(df_estaciones)
+        # Para detalle, quizás queremos un zoom inicial más cercano
+        renderizar_detalle_estacion(df_estaciones, zoom_seleccionado)
 else:
-    st.error("No se pudieron cargar los datos de la API.")
+    st.error("No se pudieron cargar los datos.")
