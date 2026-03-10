@@ -1,53 +1,54 @@
 import pandas as pd
+import requests
+import streamlit as st
 
-def cargar_datos_ecobici():
+@st.cache_data
+def cargar_estaciones_ecobici():
     """
-    Carga y limpia los datos de Ecobici siguiendo la lógica del cuaderno original.
-    Retorna un DataFrame procesado.
+    Carga y cruza la información de estaciones y su estado en tiempo real.
     """
-    # URLs de los archivos originales en el repositorio
-    urls = [
-        "https://raw.githubusercontent.com/PameCardoso/Hito_1_Equipo_10/main/2023-01.csv",
-        "https://raw.githubusercontent.com/PameCardoso/Hito_1_Equipo_10/main/2023-02.csv",
-        "https://raw.githubusercontent.com/PameCardoso/Hito_1_Equipo_10/main/2023-03.csv"
-    ]
+    url_info = "https://gbfs.mex.lyftbikes.com/gbfs/es/station_information.json"
+    url_status = "https://gbfs.mex.lyftbikes.com/gbfs/es/station_status.json"
+
+    try:
+        # 1. Obtener datos de información de estaciones (Nombre, Lat, Lon)
+        resp_info = requests.get(url_info).json()
+        df_info = pd.DataFrame(resp_info['data']['stations'])
+        
+        # 2. Obtener datos de estado (Bicis disponibles, anclajes libres)
+        resp_status = requests.get(url_status).json()
+        df_status = pd.DataFrame(resp_status['data']['stations'])
+
+        # 3. Unir ambos DataFrames usando 'station_id'
+        # Esto combina la ubicación física con el estado actual
+        df_completo = pd.merge(df_info, df_status, on="station_id")
+
+        # Limpieza básica siguiendo tu lógica de optimización
+        columnas_utiles = [
+            'station_id', 'name', 'lat', 'lon', 'capacity', 
+            'num_bikes_available', 'num_docks_available', 'status'
+        ]
+        df_completo = df_completo[columnas_utiles]
+
+        return df_completo
+
+    except Exception as e:
+        st.error(f"Error al conectar con la API de Ecobici: {e}")
+        return pd.DataFrame()
+
+def procesar_datos_historicos(df_historico):
+    """
+    Aplica la lógica de transformación que tenías en tu Jupyter 
+    a los datos de viajes (CSV).
+    """
+    df = df_historico.copy()
     
-    # 1. Carga de datos
-    li = []
-    for url in urls:
-        # Se asume que el separador es coma y se manejan posibles errores de tipos
-        df_temp = pd.read_csv(url, index_col=None, header=0, low_memory=False)
-        li.append(df_temp)
-
-    # 2. Concatenación
-    df = pd.concat(li, axis=0, ignore_index=True)
-
-    # 3. Limpieza de columnas (Eliminar las que no se usan según tu lógica)
-    columnas_a_eliminar = ['Genero_Usuario', 'Edad_Usuario', 'Bici']
-    df.drop(columns=columnas_a_eliminar, inplace=True, errors='ignore')
-
-    # 4. Transformación de fechas y tiempos
-    # Convertir a datetime
+    # Convertir fechas
     df['Fecha_Retiro'] = pd.to_datetime(df['Fecha_Retiro'], dayfirst=True)
-    df['Fecha_Arribo'] = pd.to_datetime(df['Fecha_Arribo'], dayfirst=True)
     
-    # Extraer componentes temporales
+    # Extraer componentes como en tu cuaderno
     df['Hora_Retiro_H'] = pd.to_datetime(df['Hora_Retiro'], format='%H:%M:%S').dt.hour
     df['Mes_Retiro'] = df['Fecha_Retiro'].dt.month
     df['Dia_Semana'] = df['Fecha_Retiro'].dt.day_name()
-
-    # 5. Manejo de valores nulos
-    # Siguiendo tu cuaderno, eliminamos filas donde falten datos críticos
-    df.dropna(subset=['Ciclo_Estacion_Retiro', 'Ciclo_Estacion_Arribo'], inplace=True)
     
-    # Convertir IDs de estación a enteros para consistencia
-    df['Ciclo_Estacion_Retiro'] = df['Ciclo_Estacion_Retiro'].astype(int)
-    df['Ciclo_Estacion_Arribo'] = df['Ciclo_Estacion_Arribo'].astype(int)
-
     return df
-
-if __name__ == "__main__":
-    # Prueba rápida de funcionamiento
-    datos = cargar_datos_ecobici()
-    print(f"Datos cargados exitosamente. Total de registros: {len(datos)}")
-    print(datos.head())
