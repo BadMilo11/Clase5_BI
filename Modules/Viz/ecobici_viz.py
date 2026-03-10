@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+import matplotlib.pyplot as plt
+from pywaffle import Waffle
 
 def renderizar_mapa_total(df, zoom_level):
     """Muestra un mapa con todas las estaciones centrado en el centroide."""
