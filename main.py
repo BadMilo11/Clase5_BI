@@ -10,4 +10,4 @@ df_ecobici = cargar_datos_ecobici()
 
 # Ahora puedes aplicar tu lógica de visualización o análisis
 print(df_ecobici['Dia_Semana'].value_counts())
- st.write(cargar_datos_ecobici())
+st.write(cargar_datos_ecobici())
