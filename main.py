@@ -18,10 +18,3 @@ if not df_estaciones.empty:
     
     # Ejemplo: Ver tabla
     st.dataframe(df_estaciones.head())
-    # Crear una métrica rápida
-    total_bicis = df_estaciones['num_bikes_available'].sum()
-    st.metric("Total de Bicicletas Disponibles en CDMX", f"{total_bicis:,}")
-    
-    # Mapa
-    st.subheader("Ubicación de Estaciones")
-    st.map(df_estaciones)
