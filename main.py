@@ -1,7 +1,13 @@
 import streamlit as st
-from Modules.UI.header import show_header
-from Modules.Data.ecobici_service import cargar_estaciones_ecobici
-from Modules.Viz.ecobici_viz import renderizar_mapa_total, renderizar_detalle_estacion
+
+# BLOQUE DE DIAGNÓSTICO
+try:
+    from Modules.UI.header import show_header
+    from Modules.Data.ecobici_service import cargar_estaciones_ecobici
+    from Modules.Viz.ecobici_viz import renderizar_mapa_total, renderizar_detalle_estacion
+except Exception as e:
+    st.error(f"Error crítico de importación: {e}")
+    st.stop() # Detiene la app aquí para que leas el error
 
 # Configuración de página (debe ser lo primero)
 st.set_page_config(page_title="Ecobici Dashboard", layout="wide")
