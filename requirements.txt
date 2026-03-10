@@ -4,3 +4,8 @@ numpy
 matplotlib
 seaborn
 plotly
+streamlit
+requests
+pydeck
+matplotlib
+pywaffle
