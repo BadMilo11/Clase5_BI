@@ -7,4 +7,3 @@ plotly
 streamlit
 requests
 pydeck
-pywaffle
