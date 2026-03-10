@@ -1,14 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
-import matplotlib.pyplot as plt
-
-# Intentamos importar pywaffle de forma segura
-try:
-    from pywaffle import Waffle
-    PYWAFFLE_AVAILABLE = True
-except ImportError:
-    PYWAFFLE_AVAILABLE = False
+import plotly.graph_objects as go
 
 def renderizar_mapa_total(df, zoom_level):
     st.subheader("Mapa General de Estaciones")
@@ -27,47 +20,43 @@ def renderizar_detalle_estacion(df, zoom_level):
     estacion_seleccionada = st.selectbox("Selecciona una estación:", sorted(df['name'].unique()))
     row = df[df['name'] == estacion_seleccionada].iloc[0]
     
-    # Datos de la estación
     vals = {
         'Bicis OK': int(row.get('num_bikes_available', 0)),
-        'Bicis Dañadas': int(row.get('num_bikes_disabled', 0)),
-        'Puertos OK': int(row.get('num_docks_available', 0)),
-        'Puertos Dañados': int(row.get('num_docks_disabled', 0))
+        'Bicis Mal': int(row.get('num_bikes_disabled', 0)),
+        'Docks OK': int(row.get('num_docks_available', 0)),
+        'Docks Mal': int(row.get('num_docks_disabled', 0))
     }
 
     # Métricas
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Bicis OK", vals['Bicis OK'])
-    c2.metric("Bicis Mal", vals['Bicis Dañadas'])
-    c3.metric("Docks OK", vals['Puertos OK'])
-    c4.metric("Docks Mal", vals['Puertos Dañados'])
+    c2.metric("Bicis Mal", vals['Bicis Mal'], delta_color="inverse")
+    c3.metric("Docks OK", vals['Docks OK'])
+    c4.metric("Docks Mal", vals['Docks Mal'], delta_color="inverse")
 
     st.write("---")
+    st.subheader("Distribución de Inventario")
+
+    # Crear un gráfico de barras apiladas horizontal (Alternativa profesional a Waffle)
+    fig = go.Figure()
+    colores = ['#2ecc71', '#e74c3c', '#3498db', '#95a5a6']
     
-    # Lógica del Waffle
-    if PYWAFFLE_AVAILABLE:
-        try:
-            if sum(vals.values()) > 0:
-                fig = plt.figure(
-                    FigureClass=Waffle,
-                    rows=5,
-                    values=vals,
-                    colors=("#2ecc71", "#e74c3c", "#3498db", "#95a5a6"),
-                    legend={'loc': 'upper left', 'bbox_to_anchor': (1, 1)},
-                    icons='bicycle',
-                    icon_size=15
-                )
-                st.pyplot(fig)
-                plt.close(fig)
-            else:
-                st.warning("Sin datos de inventario.")
-        except Exception as e:
-            st.error(f"Error visualizando Waffle: {e}")
-            st.info("Mostrando gráfico de barras alternativo:")
-            st.bar_chart(pd.Series(vals)) # Opción de respaldo
-    else:
-        st.error("La librería 'pywaffle' no está instalada correctamente.")
-        st.bar_chart(pd.Series(vals))
+    for i, (label, valor) in enumerate(vals.items()):
+        fig.add_trace(go.Bar(
+            name=label,
+            y=["Estado"],
+            x=[valor],
+            orientation='h',
+            marker=dict(color=colores[i])
+        ))
+
+    fig.update_layout(
+        barmode='stack', 
+        height=200, 
+        margin=dict(l=20, r=20, t=20, b=20),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
     st.write("---")
     # Mapa
