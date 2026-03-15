@@ -31,13 +31,13 @@ if not df_estaciones.empty:
     if opcion == "Mapa General":
         st.title("🚲 Red Completa Ecobici")
         renderizar_mapa_total(df_estaciones, zoom_seleccionado)
-        pbc.render_global_dashboard(df)
+        pbc.render_global_dashboard(df_estaciones)
         
     elif opcion == "Detalle de Estación":
         st.title("🔍 Análisis de Disponibilidad")
         id_sel = st.selectbox("Selecciona Estación", df['station_id'].values)
         # Para detalle, quizás queremos un zoom inicial más cercano
         renderizar_detalle_estacion(df_estaciones, zoom_seleccionado)
-        pbc.render_station_comparison(df, id_sel)
+        pbc.render_station_comparison(df_estaciones, id_sel)
 else:
     st.error("No se pudieron cargar los datos.")
