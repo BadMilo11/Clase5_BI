@@ -30,7 +30,7 @@ if not df_estaciones.empty:
     # Lógica de despliegue
     if opcion == "Mapa General":
         st.title("🚲 Red Completa Ecobici")
-        renderizar_mapa_total(df)
+        renderizar_mapa_total(df_estaciones)
         pbc.renderizar_mapa_total(df_estaciones, zoom_seleccionado)
         
     elif opcion == "Detalle de Estación":
