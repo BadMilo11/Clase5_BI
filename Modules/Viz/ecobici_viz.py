@@ -142,3 +142,4 @@ def renderizar_detalle_estacion(df, zoom_level):
             st.info("Datos de inventario no disponibles.")
 
     st.write("---")
+    return row['station_id']
