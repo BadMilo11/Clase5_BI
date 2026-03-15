@@ -64,7 +64,7 @@ def render_station_comparison(df, id_estacion):
 
     st.write(f"#### 📊 Análisis de Ocupación: {nombre_estacion}")
 
-    # Estructura para la barra de capacidad
+    # Estructura para la barra
     df_cap = pd.DataFrame({
         'Categoría': ['Bicis Libres', 'Bicis Mal', 'Docks Libres', 'Docks Mal'],
         'Cantidad': [
@@ -72,13 +72,15 @@ def render_station_comparison(df, id_estacion):
             row['num_bikes_disabled'],
             row['num_docks_available'],
             row['num_docks_disabled']
-        ]
+        ],
+        # Creamos una columna auxiliar para el eje Y que sea igual para todos
+        'Eje': [f"Capacidad Total: {row['capacity']}"] * 4 
     })
 
     fig_cap = px.bar(
         df_cap,
         x='Cantidad',
-        y=[f"Capacidad: {row['capacity']}"], 
+        y='Eje', # Ahora usamos la columna que tiene 4 elementos iguales
         color='Categoría',
         orientation='h',
         color_discrete_map={
@@ -87,8 +89,17 @@ def render_station_comparison(df, id_estacion):
             'Docks Libres': '#B7CBD7',
             'Docks Mal': '#333333'
         },
-        height=250
+        height=250,
+        text='Cantidad' # Opcional: muestra el número dentro de la barra
     )
+    
+    fig_cap.update_layout(
+        yaxis_title=None, 
+        xaxis_title="Número de Unidades",
+        legend=dict(orientation="h", yanchor="bottom", y=-0.8, xanchor="center", x=0.5)
+    )
+    
+    st.plotly_chart(fig_cap, use_container_width=True)
     
     fig_cap.update_layout(
         yaxis_title=None, 
