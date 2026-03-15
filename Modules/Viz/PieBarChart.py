@@ -100,9 +100,3 @@ def render_station_comparison(df, id_estacion):
     )
     
     st.plotly_chart(fig_cap, use_container_width=True)
-    
-    fig_cap.update_layout(
-        yaxis_title=None, 
-        legend=dict(orientation="h", yanchor="bottom", y=-0.5, xanchor="center", x=0.5)
-    )
-    st.plotly_chart(fig_cap, use_container_width=True)
