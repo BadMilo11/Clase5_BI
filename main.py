@@ -35,8 +35,7 @@ if not df_estaciones.empty:
         
     elif opcion == "Detalle de Estación":
         st.title("🔍 Análisis de Disponibilidad")
-        id_sel = st.selectbox("Selecciona Estación", df['station_id'].values)
-        # Para detalle, quizás queremos un zoom inicial más cercano
+        id_sel = st.selectbox("Selecciona Estación", df_estaciones['station_id'].values)
         renderizar_detalle_estacion(df_estaciones, zoom_seleccionado)
         pbc.render_station_comparison(df_estaciones, id_sel)
 else:
